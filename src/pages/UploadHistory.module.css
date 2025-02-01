@@ -1,0 +1,69 @@
+/* UploadHistory.module.css */
+.container {
+    padding: 20px;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .historyTable {
+    width: 90%;
+    margin-left: 100px;
+    margin-top: 50px;
+    border-collapse: collapse;
+  }
+  
+  .historyTable th,
+  .historyTable td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center
+  }
+  
+  .historyTable th {
+    background-color: #f2f2f2;
+  }
+  
+  .loading {
+    font-size: 18px;
+    text-align: center;
+    padding: 20px;
+  }
+  
+  .pagination {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: center
+  }
+
+  .activePage {
+    background-color: #007bff;
+    color: white;
+  }
+
+  .buttonGroup {
+    margin-top: 20vh;
+    display: flex;
+    font-size: 1rem;
+    flex-direction: row;
+    justify-content: center;
+  }
+  
+  .visualizeButton {
+    position: fixed;
+    right: 5vh;
+    padding: 1rem 2rem;
+    font-size: 1.25rem;
+    min-width: 150px;
+    height: auto;
+    color: #000;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  .layout {
+    display: flex;
+    height: 100vh;
+  }
+  

@@ -1,75 +1,62 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import styles from './Upload.module.css';
+import FileUploader from '../components/FileUploader';
+import Sidebar from '../components/SideBar';
+import { uploadFiles } from "../api/api";
+import { useNavigate } from "react-router-dom";
 
 function Upload() {
-  const [files, setFiles] = useState([]);
-  const dropRef = useRef(null);
-
-  // Helper to update our files state
-  const handleFiles = (fileList) => {
-    setFiles((prevFiles) => [...prevFiles, ...Array.from(fileList)]);
+  const navigate = useNavigate();
+  const [uploadingFiles, setUploadingFiles] = useState([]);
+  const removeUploadFiles = (index) => {
+    const updatedFiles = uploadingFiles.filter((_, i) => i !== index);
+    setUploadingFiles(updatedFiles);
   };
 
-  // Drag events
-  const handleDragOver = (e) => {
-    e.preventDefault();
-    dropRef.current.classList.add(styles.dragover);
+  const handleUploadFiles = async () => {
+    try {
+      const selectedFiles = uploadingFiles;
+      const formData = new FormData();
+      for (let i = 0; i < selectedFiles.length; i++) {
+        formData.append("files", selectedFiles[i]);
+      }
+      const response = await uploadFiles(formData);
+      return response;
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  const handleDragLeave = (e) => {
-    e.preventDefault();
-    dropRef.current.classList.remove(styles.dragover);
-  };
+  const handleSubmit = async (e) => {
+    e.preventDefault()
 
-  const handleDrop = (e) => {
-    e.preventDefault();
-    dropRef.current.classList.remove(styles.dragover);
-    const droppedFiles = e.dataTransfer.files;
-    handleFiles(droppedFiles);
-  };
+    try {
+      // Validate
+      if (!uploadingFiles || uploadingFiles.length === 0) {
+        alert("Please upload files before start grading!");
+        return;
+      }
 
-  // When selecting files via the "Browse" button
-  const handleFileChange = (e) => {
-    handleFiles(e.target.files);
+      await handleUploadFiles();
+    } catch (error) {
+      alert("Cannot grade your essay at this time, please try again later!");
+      console.log(error);
+    } finally {
+      navigate("/Upload-History");
+    }
   };
 
   return (
-    <div className={styles.container}>
-      <h1>File Uploader</h1>
-      
-      {/* Dropzone + "Browse" button */}
-      <div
-        className={styles.dropzone}
-        ref={dropRef}
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
-      >
-        <p>Drag & drop files here</p>
-        <p>or</p>
-
-        <label className={styles.uploadLabel}>
-          Browse
-          <input
-            type="file"
-            multiple
-            className={styles.fileInput}
-            onChange={handleFileChange}
-          />
-        </label>
+    <div className={styles.parentContainer} >
+      <Sidebar/>
+      <div className={styles.container}>
+        <FileUploader
+          setUploadingFiles={setUploadingFiles}
+          uploadingFiles={uploadingFiles}
+          removeUploadFiles={removeUploadFiles}
+        />
       </div>
-      
-      {/* Display the list of uploaded files */}
-      {files.length > 0 && (
-        <div className={styles.fileList}>
-          <h3>Uploaded Files:</h3>
-          <ul>
-            {files.map((file, index) => (
-              <li key={index}>{file.name}</li>
-            ))}
-          </ul>
-        </div>
-      )}
+      <button className={styles.submitButton} onClick={handleSubmit}>Upload Files</button>
     </div>
   );
 }
